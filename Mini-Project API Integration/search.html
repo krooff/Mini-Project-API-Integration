@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Search</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Search for a Pokémon</h2>
+        <form id="search-form">
+            <input type="text" id="pokemon-name" class="form-control" placeholder="Enter Pokémon name or ID" required>
+            <button type="submit" class="btn btn-primary mt-3">Search</button>
+        </form>
+        <div id="pokemon-details" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pokemonName = document.getElementById('pokemon-name').value.toLowerCase();
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+            const data = await response.json();
+            displayPokemon(data);
+        });
+
+        function displayPokemon(pokemon) {
+            const pokemonDetails = document.getElementById('pokemon-details');
+            pokemonDetails.innerHTML = `
+                <div class="card mt-4" style="width: 18rem;">
+                    <img src="${pokemon.sprites.front_default}" class="card-img-top" alt="${pokemon.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h5>
+                        <p class="card-text">Type: ${pokemon.types.map(type => type.type.name).join(', ')}</p>
+                        <p class="card-text">Height: ${pokemon.height}</p>
+                        <p class="card-text">Weight: ${pokemon.weight}</p>
+                    </div>
+                </div>`;
+        }
+    </script>
+</body>
+</html>

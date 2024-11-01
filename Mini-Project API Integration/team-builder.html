@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Team Builder</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pokemon-card { cursor: grab; }
+        .team { border: 2px dashed #3b4cca; min-height: 200px; padding: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Pokémon Team Builder</h2>
+        <div id="pokemon-options" class="row mb-4"></div>
+        <h3>Your Team</h3>
+        <div id="team" class="team row"></div>
+    </div>
+
+    <script>
+        async function fetchPokemonList() {
+            const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10');
+            const data = await response.json();
+            displayPokemonOptions(data.results);
+        }
+
+        function displayPokemonOptions(pokemonList) {
+            const optionsContainer = document.getElementById('pokemon-options');
+            pokemonList.forEach(pokemon => {
+                const pokemonCard = document.createElement('div');
+                pokemonCard.classList.add('col-md-3', 'pokemon-card', 'card', 'p-2', 'm-2');
+                pokemonCard.draggable = true;
+                pokemonCard.innerHTML = `<p>${pokemon.name}</p>`;
+                pokemonCard.addEventListener('dragstart', drag);
+                optionsContainer.appendChild(pokemonCard);
+            });
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.innerHTML);
+        }
+
+        document.getElementById('team').addEventListener('dragover', allowDrop);
+        document.getElementById('team').addEventListener('drop', drop);
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const teamContainer = document.getElementById('team');
+            const teamMember = document.createElement('div');
+            teamMember.classList.add('col-md-3', 'card', 'p-2', 'm-2');
+            teamMember.innerHTML = data;
+            teamContainer.appendChild(teamMember);
+        }
+
+        fetchPokemonList();
+    </script>
+</body>
+</html>
